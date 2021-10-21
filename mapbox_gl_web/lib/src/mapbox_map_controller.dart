@@ -454,7 +454,7 @@ class MapboxMapController extends MapboxGlPlatform
   }
 
   void _onCameraMoveStarted(_) {
-    onCameraMoveStartedPlatform(null);
+    onCameraMoveStartedPlatform(false);
   }
 
   void _onCameraMove(_) {

@@ -974,7 +974,9 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
     
     func mapView(_ mapView: MGLMapView, regionWillChangeAnimated animated: Bool) {
         if let channel = channel {
-            channel.invokeMethod("camera#onMoveStarted", arguments: []);
+            channel.invokeMethod("camera#onMoveStarted", arguments: [
+                "isGesture": !animated
+            ]);
         }
     }
     

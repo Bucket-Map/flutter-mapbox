@@ -17,7 +17,7 @@ typedef void OnCameraTrackingDismissedCallback();
 typedef void OnCameraTrackingChangedCallback(MyLocationTrackingMode mode);
 
 typedef void OnCameraIdleCallback();
-typedef void OnCameraMoveStartedCallback();
+typedef void OnCameraMoveStartedCallback(bool isGesture);
 
 typedef void OnMapIdleCallback();
 
@@ -90,9 +90,9 @@ class MapboxMapController extends ChangeNotifier {
       }
     });
 
-    MapboxGlPlatform.getInstance(_id).onCameraMoveStartedPlatform.add((_) {
+    MapboxGlPlatform.getInstance(_id).onCameraMoveStartedPlatform.add((isGesture) {
       _isCameraMoving = true;
-      onCameraMoveStarted?.call();
+      onCameraMoveStarted?.call(isGesture);
       notifyListeners();
     });
 

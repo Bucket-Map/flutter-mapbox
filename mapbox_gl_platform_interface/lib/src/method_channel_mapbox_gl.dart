@@ -36,7 +36,8 @@ class MethodChannelMapboxGl extends MapboxGlPlatform {
         }
         break;
       case 'camera#onMoveStarted':
-        onCameraMoveStartedPlatform(null);
+        final bool isGesture = call.arguments['isGesture'];
+        onCameraMoveStartedPlatform(isGesture);
         break;
       case 'camera#onMove':
         final cameraPosition =

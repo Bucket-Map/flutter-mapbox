@@ -17,6 +17,7 @@ typedef void OnCameraTrackingDismissedCallback();
 typedef void OnCameraTrackingChangedCallback(MyLocationTrackingMode mode);
 
 typedef void OnCameraIdleCallback();
+typedef void OnCameraMoveStartedCallback();
 
 typedef void OnMapIdleCallback();
 
@@ -36,16 +37,20 @@ typedef void OnMapIdleCallback();
 /// Line tap events can be received by adding callbacks to [onLineTapped].
 /// Circle tap events can be received by adding callbacks to [onCircleTapped].
 class MapboxMapController extends ChangeNotifier {
-  MapboxMapController._(this._id, CameraPosition initialCameraPosition,
-      {this.onStyleLoadedCallback,
-      this.onMapClick,
-      this.onMapLongClick,
-      this.onAttributionClick,
-      this.onCameraTrackingDismissed,
-      this.onCameraTrackingChanged,
-      this.onMapIdle,
-      this.onUserLocationUpdated,
-      this.onCameraIdle}) {
+  MapboxMapController._(
+    this._id,
+    CameraPosition initialCameraPosition, {
+    this.onStyleLoadedCallback,
+    this.onMapClick,
+    this.onMapLongClick,
+    this.onAttributionClick,
+    this.onCameraTrackingDismissed,
+    this.onCameraTrackingChanged,
+    this.onMapIdle,
+    this.onCameraMoveStarted,
+    this.onUserLocationUpdated,
+    this.onCameraIdle,
+  }) {
     _cameraPosition = initialCameraPosition;
 
     MapboxGlPlatform.getInstance(_id)
@@ -87,6 +92,7 @@ class MapboxMapController extends ChangeNotifier {
 
     MapboxGlPlatform.getInstance(_id).onCameraMoveStartedPlatform.add((_) {
       _isCameraMoving = true;
+      onCameraMoveStarted?.call();
       notifyListeners();
     });
 
@@ -162,26 +168,34 @@ class MapboxMapController extends ChangeNotifier {
     });
   }
 
-  static MapboxMapController init(int id, CameraPosition initialCameraPosition,
-      {OnStyleLoadedCallback? onStyleLoadedCallback,
-      OnMapClickCallback? onMapClick,
-      OnUserLocationUpdated? onUserLocationUpdated,
-      OnMapLongClickCallback? onMapLongClick,
-      OnAttributionClickCallback? onAttributionClick,
-      OnCameraTrackingDismissedCallback? onCameraTrackingDismissed,
-      OnCameraTrackingChangedCallback? onCameraTrackingChanged,
-      OnCameraIdleCallback? onCameraIdle,
-      OnMapIdleCallback? onMapIdle}) {
-    return MapboxMapController._(id, initialCameraPosition,
-        onStyleLoadedCallback: onStyleLoadedCallback,
-        onMapClick: onMapClick,
-        onUserLocationUpdated: onUserLocationUpdated,
-        onMapLongClick: onMapLongClick,
-        onAttributionClick: onAttributionClick,
-        onCameraTrackingDismissed: onCameraTrackingDismissed,
-        onCameraTrackingChanged: onCameraTrackingChanged,
-        onCameraIdle: onCameraIdle,
-        onMapIdle: onMapIdle);
+  static MapboxMapController init(
+    int id,
+    CameraPosition initialCameraPosition, {
+    OnStyleLoadedCallback? onStyleLoadedCallback,
+    OnMapClickCallback? onMapClick,
+    OnUserLocationUpdated? onUserLocationUpdated,
+    OnMapLongClickCallback? onMapLongClick,
+    OnAttributionClickCallback? onAttributionClick,
+    OnCameraTrackingDismissedCallback? onCameraTrackingDismissed,
+    OnCameraTrackingChangedCallback? onCameraTrackingChanged,
+    OnCameraIdleCallback? onCameraIdle,
+    OnCameraMoveStartedCallback? onCameraMoveStarted,
+    OnMapIdleCallback? onMapIdle,
+  }) {
+    return MapboxMapController._(
+      id,
+      initialCameraPosition,
+      onStyleLoadedCallback: onStyleLoadedCallback,
+      onMapClick: onMapClick,
+      onUserLocationUpdated: onUserLocationUpdated,
+      onMapLongClick: onMapLongClick,
+      onAttributionClick: onAttributionClick,
+      onCameraTrackingDismissed: onCameraTrackingDismissed,
+      onCameraTrackingChanged: onCameraTrackingChanged,
+      onCameraIdle: onCameraIdle,
+      onCameraMoveStarted: onCameraMoveStarted,
+      onMapIdle: onMapIdle,
+    );
   }
 
   static Future<void> initPlatform(int id) async {
@@ -200,6 +214,7 @@ class MapboxMapController extends ChangeNotifier {
   final OnCameraTrackingChangedCallback? onCameraTrackingChanged;
 
   final OnCameraIdleCallback? onCameraIdle;
+  final OnCameraMoveStartedCallback? onCameraMoveStarted;
 
   final OnMapIdleCallback? onMapIdle;
 
@@ -884,7 +899,7 @@ class MapboxMapController extends ChangeNotifier {
   }
 
   /// Sets the specified [filter] for the given layer.
-  /// 
+  ///
   /// Change listeners are notified once the filter have been updated on the
   /// platform side.
   ///
